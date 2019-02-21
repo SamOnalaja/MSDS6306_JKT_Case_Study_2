@@ -1,7 +1,9 @@
-install.packages("MASS", "readxl")
-
+install.packages("readxl")
+library(knitr)
+library(kableExtra)
 library(readxl)
 library(dplyr)
+library(ggplot2)
 CaseStudy2_data <- read_excel("../datasets/CaseStudy2-data.xlsx")
 
 glimpse(CaseStudy2_data)
@@ -58,3 +60,75 @@ HRdf$StockOptionLevel <- as.factor(HRdf$StockOptionLevel)
 HRdf$WorkLifeBalance <- as.factor(HRdf$WorkLifeBalance)
 
 glimpse(HRdf)
+
+
+theme_set(theme_light())
+
+
+## Histograms for attrition
+ggplot(HRdf, aes(HRdf$JobLevel)) + 
+  geom_bar(aes(fill=Attrition), width = 0.5) +
+  labs(title = "Attrition by Job Level",
+       subtitle = "Attrition by Specific Job Level",
+       x = "Job Level",
+       y = "Frequency") +
+  coord_flip()
+
+## Box Plots of Monthly Income by Job Role 
+ggplot(HRdf, aes(x=JobRole, y=MonthlyIncome, fill=Attrition)) + 
+  geom_boxplot()
+
+## Box Plots of Monthly Income by Job Involvment 
+ggplot(HRdf, aes(x=JobInvolvement, y=MonthlyIncome, fill=Attrition)) + 
+  geom_boxplot()
+
+## Box Plots of Age by Job Role
+ggplot(HRdf, aes(x=JobRole, y=Age, fill=Attrition)) + 
+  geom_boxplot()
+
+## Box Plots of YearsAtCompany by Job Role 
+ggplot(HRdf, aes(x=JobRole, y=YearsAtCompany, fill=Attrition)) + 
+  geom_boxplot()
+
+## Box Plots of YearsAtCompany by Job Role 
+ggplot(HRdf, aes(x=JobRole, y=TotalWorkingYears, fill=Attrition)) + 
+  geom_boxplot()
+
+## Box Plots of YearsSince Promotion by Job Role 
+ggplot(HRdf, aes(x=JobRole, y=YearsSinceLastPromotion, fill=Attrition)) + 
+  geom_boxplot()
+
+## Box Plots of YearswCurrent Manager by Job Role 
+ggplot(HRdf, aes(x=JobRole, y=YearsWithCurrManager, fill=Attrition)) + 
+  geom_boxplot()
+
+## Box Plots of TrainingTimes by Job Role 
+ggplot(HRdf, aes(x=Department, y=TrainingTimesLastYear, fill=Attrition)) + 
+  geom_boxplot()
+
+## Box Plots of DistanceFromHome by MaritalStatus 
+ggplot(HRdf, aes(x=MaritalStatus, y=DistanceFromHome, fill=Attrition)) + 
+  geom_boxplot()
+
+ggplot(HRdf, aes(BusinessTravel, Attrition)) + geom_jitter()
+
+ggplot(HRdf, aes(OverTime, Attrition)) + geom_jitter()
+
+ggplot(HRdf, aes(Education, Attrition)) + geom_jitter()
+
+ggplot(HRdf, aes(OverTime, Attrition)) + geom_jitter()
+
+
+install.packages("rpart", "rpart.plot")
+library(rpart, rpart.plot) #for trees
+tree1 <- rpart(Attrition ~ Age + Education + MonthlyIncome + JobLevel + StockOptionLevel + MaritalStatus +
+                 Department + BusinessTravel + DistanceFromHome + EducationField + Gender + JobRole +
+                 NumCompaniesWorked + OverTime + PercentSalaryHike + TotalWorkingYears + TrainingTimesLastYear +
+                 YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + YearsWithCurrManager + 
+                 EnvironmentSatisfaction + JobInvolvement + JobSatisfaction + PerformanceRating +
+                 RelationshipSatisfaction + WorkLifeBalance,
+                 data = HRdf,  method="class")
+
+summary(tree1)
+rpart.plot(tree1)
+
