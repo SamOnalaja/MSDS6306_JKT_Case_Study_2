@@ -65,7 +65,7 @@ glimpse(HRdf)
 theme_set(theme_light())
 
 
-## Histograms for attrition
+## Histograms for attrition Change to PCT
 ggplot(HRdf, aes(HRdf$JobLevel)) + 
   geom_bar(aes(fill=Attrition), width = 0.5) +
   labs(title = "Attrition by Job Level",
@@ -86,7 +86,7 @@ ggplot(HRdf, aes(x=JobInvolvement, y=MonthlyIncome, fill=Attrition)) +
 ggplot(HRdf, aes(x=JobRole, y=Age, fill=Attrition)) + 
   geom_boxplot()
 
-## Box Plots of YearsAtCompany by Job Role 
+## Box Plots of YearsAtCompany by Job Role Look at Job Level
 ggplot(HRdf, aes(x=JobRole, y=YearsAtCompany, fill=Attrition)) + 
   geom_boxplot()
 
@@ -131,4 +131,13 @@ tree1 <- rpart(Attrition ~ Age + Education + MonthlyIncome + JobLevel + StockOpt
 
 summary(tree1)
 rpart.plot(tree1)
+
+
+install.packages("e1071")
+library(e1071)
+Naive_Bayes_Model=naiveBayes(Attrition ~., data=HRdf)
+Naive_Bayes_Model
+NB_Predictions=predict(Naive_Bayes_Model,HRdf)
+#Confusion matrix to check accuracy
+table(NB_Predictions,CaseStudy2_data$Attrition)
 
