@@ -58,7 +58,22 @@ HRdf$PerformanceRating <- as.factor(HRdf$PerformanceRating)
 HRdf$RelationshipSatisfaction <- as.factor(HRdf$RelationshipSatisfaction)
 HRdf$StockOptionLevel <- as.factor(HRdf$StockOptionLevel)
 HRdf$WorkLifeBalance <- as.factor(HRdf$WorkLifeBalance)
-
+HRdf$TrainingTimesLastYear <- as.factor(HRdf$TrainingTimesLastYear)
+HRdf$YearsSinceLastPromotionRange <- cut(HRdf$YearsSinceLastPromotion, 
+                                         breaks=c(0, 1, 2, 3, 5, 7, 10, 15), right = FALSE)
+HRdf$YearsWithCurrManagerRange <- cut(HRdf$YearsWithCurrManager, 
+                                         breaks=c(0, 1, 2, 3, 5, 7, 10, 15), right = FALSE)
+HRdf$AgeRange <- cut(HRdf$Age, breaks=c(18, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65), right = FALSE)
+HRdf$DistanceFromHomeRange <- cut(HRdf$DistanceFromHome, breaks=c(0, 10, 20, 30, 40), right = FALSE)
+HRdf$MonthlyIncomeRange <- cut(HRdf$MonthlyIncome, breaks=c(1000, 2000, 3000, 4000, 5000, 6000, 7000, 
+                                                       8000, 9000, 10000, 20000),right = FALSE)
+HRdf$TotalWorkingYearsRange <- cut(HRdf$TotalWorkingYears, breaks=c(0, 3, 5, 10, 15, 20, 30, 40),
+                                   right = FALSE)
+HRdf$YearsAtCompanyRange <- cut(HRdf$YearsAtCompany, breaks=c(0, 3, 5, 10, 15, 20, 30, 40),
+                                   right = FALSE)
+HRdf$PercentSalaryHikeRange <- cut(HRdf$PercentSalaryHike, breaks=c(10, 15, 20, 25),
+                                   right = FALSE)
+unique(HRdf$PercentSalaryHike)
 glimpse(HRdf)
 
 
@@ -120,8 +135,12 @@ ggplot(HRdf, aes(OverTime, Attrition)) + geom_jitter()
 
 
 install.packages("rpart", "rpart.plot")
-library(rpart, rpart.plot) #for trees
-tree1 <- rpart(Attrition ~ Age + Education + MonthlyIncome + JobLevel + StockOptionLevel + MaritalStatus +
+library(rpart.plot) #for trees
+tree1 <- rpart(Attrition ~ .,
+               data = HRdf,  method="class")
+
+
+tree2 <- rpart(Attrition ~ Age + Education + MonthlyIncome + JobLevel + StockOptionLevel + MaritalStatus +
                  Department + BusinessTravel + DistanceFromHome + EducationField + Gender + JobRole +
                  NumCompaniesWorked + OverTime + PercentSalaryHike + TotalWorkingYears + TrainingTimesLastYear +
                  YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + YearsWithCurrManager + 
@@ -132,12 +151,96 @@ tree1 <- rpart(Attrition ~ Age + Education + MonthlyIncome + JobLevel + StockOpt
 summary(tree1)
 rpart.plot(tree1)
 
+tree3 <- rpart(Attrition ~ Age + Education + JobLevel + StockOptionLevel + MaritalStatus +
+                 Department + BusinessTravel + DistanceFromHome + EducationField + Gender + JobRole +
+                 NumCompaniesWorked + OverTime + PercentSalaryHike + TotalWorkingYears + TrainingTimesLastYear +
+                 YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + YearsWithCurrManager + 
+                 EnvironmentSatisfaction + JobInvolvement + JobSatisfaction + PerformanceRating +
+                 RelationshipSatisfaction + WorkLifeBalance,
+               data = HRdf,  method="class")
+summary(tree2)
+rpart.plot(tree2)
 
+tree3 <- rpart(Attrition ~ AgeRange + Education + JobLevel + StockOptionLevel + BusinessTravel + DistanceFromHome + 
+                 EducationField + Department +
+                 NumCompaniesWorked + OverTime + TotalWorkingYears + TrainingTimesLastYear +
+                 YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + YearsWithCurrManager + 
+                 EnvironmentSatisfaction + JobInvolvement + JobSatisfaction + PerformanceRating +
+                 RelationshipSatisfaction + WorkLifeBalance,
+               data = HRdf,  method="class")
+
+rpart.plot(tree3)
 install.packages("e1071")
 library(e1071)
-Naive_Bayes_Model=naiveBayes(Attrition ~., data=HRdf)
-Naive_Bayes_Model
-NB_Predictions=predict(Naive_Bayes_Model,HRdf)
-#Confusion matrix to check accuracy
-table(NB_Predictions,CaseStudy2_data$Attrition)
 
+# Model 1
+HRfactdf <- data.frame(HRdf$Attrition, HRdf$BusinessTravel, HRdf$Department, HRdf$Education, HRdf$EducationField,
+                       HRdf$EnvironmentSatisfaction, HRdf$Gender, HRdf$JobInvolvement, HRdf$JobLevel,
+                       HRdf$JobRole, HRdf$JobSatisfaction, HRdf$MaritalStatus, HRdf$OverTime, 
+                       HRdf$PerformanceRating, HRdf$RelationshipSatisfaction, HRdf$StockOptionLevel,
+                       HRdf$WorkLifeBalance, HRdf$AgeRange, HRdf$DistanceFromHomeRange, HRdf$MonthlyIncomeRange,
+                       HRdf$TotalWorkingYearsRange, HRdf$YearsAtCompanyRange, HRdf$YearsSinceLastPromotionRange,
+                       HRdf$YearsWithCurrManagerRange, HRdf$PercentSalaryHikeRange)
+
+colnames(HRfactdf) <- c("Attrition", "BusinessTravel", "Department", "Education", "EducationField",
+                        "EnvironmentSatisfaction", "Gender", "JobInvolvement", "JobLevel",
+                        "JobRole", "JobSatisfaction", "MaritalStatus", "OverTime", 
+                        "PerformanceRating", "RelationshipSatisfaction", "StockOptionLevel",
+                        "WorkLifeBalance", "AgeRange", "DistanceFromHomeRange", "MonthlyIncomeRange",
+                        "TotalWorkingYearsRange", "YearsAtCompanyRange", "YearsSinceLastPromotionRange",
+                        "YearsWithCurrManagerRange", "PercentSalaryHikeRange")
+
+nb = naiveBayes(Attrition ~., data=HRfactdf, laplace = 0)
+nb
+## Test the model
+# Divide the dataset into training and testing dataset
+# Split it as 2/3 - 1/3 using random sampling
+test_dataset = sample(1:nrow(HRfactdf), 490)	 
+train_dataset = setdiff(1:nrow(HRfactdf), test_dataset)
+test_dataset
+train_dataset
+
+
+# Training the model on training dataset
+trained_model = naiveBayes(HRfactdf[train_dataset, 2:25], HRfactdf[train_dataset, 1])
+trained_model
+
+# Using the trained model to make prediction on test dataset
+test_results = predict(trained_model, HRfactdf[test_dataset, 2:25])
+test_results
+
+# print confusion matrix
+conf_matrix = table(HRfactdf[test_dataset, 1], test_results, dnn = list('actual', 'predicted'))
+conf_matrix
+# computing accuracy
+# It is sum of diagonal elements divided by all entries in confusion matrix
+accuracy = sum(diag(conf_matrix)) / sum(conf_matrix) 
+accuracy
+
+
+
+# Model 1
+HRfactdf <- data.frame(HRdf$Attrition, HRdf$BusinessTravel, HRdf$Department, HRdf$Education, HRdf$EducationField,
+                       HRdf$EnvironmentSatisfaction, HRdf$Gender, HRdf$JobInvolvement, HRdf$JobLevel,
+                       HRdf$JobRole, HRdf$JobSatisfaction, HRdf$MaritalStatus, HRdf$OverTime, 
+                       HRdf$PerformanceRating, HRdf$RelationshipSatisfaction, HRdf$StockOptionLevel,
+                       HRdf$WorkLifeBalance, HRdf$AgeRange, HRdf$DistanceFromHomeRange, HRdf$MonthlyIncomeRange,
+                       HRdf$TotalWorkingYearsRange, HRdf$YearsAtCompanyRange, HRdf$YearsSinceLastPromotionRange,
+                       HRdf$YearsWithCurrManagerRange, HRdf$PercentSalaryHikeRange)
+
+colnames(HRfactdf) <- c("Attrition", "BusinessTravel", "Department", "Education", "EducationField",
+                        "EnvironmentSatisfaction", "Gender", "JobInvolvement", "JobLevel",
+                        "JobRole", "JobSatisfaction", "MaritalStatus", "OverTime", 
+                        "PerformanceRating", "RelationshipSatisfaction", "StockOptionLevel",
+                        "WorkLifeBalance", "AgeRange", "DistanceFromHomeRange", "MonthlyIncomeRange",
+                        "TotalWorkingYearsRange", "YearsAtCompanyRange", "YearsSinceLastPromotionRange",
+                        "YearsWithCurrManagerRange", "PercentSalaryHikeRange")
+glimpse(HRfactdf)
+
+Naive_Bayes_Model=naiveBayes(Attrition ~., data=HRfactdf)
+Naive_Bayes_Model
+NB_Predictions=predict(Naive_Bayes_Model,HRfactdf)
+#Confusion matrix to check accuracy
+table(NB_Predictions,HRfactdf$Attrition)
+
+NB_Predictions
