@@ -1,0 +1,173 @@
+---
+title: "DDSAnalytics"
+author: "Travis R. Daun, Joe Jiang, Karl J. Jurek"
+date: "February 21, 2019"
+output: html_document
+---
+
+```{r setup, include=T}
+knitr::opts_chunk$set(echo = TRUE, fig.width=10,fig.height=11)
+
+setwd("C:/GIT_Repositories/MSDS6306_JKT_Case_Study_2/datasets")
+
+# Adding necessary packages and libraries
+install.packages("readxl", dependencies=F, repos="http://cran.us.r-project.org")
+library(readxl)
+library(knitr)
+library(kableExtra)
+library(readxl)
+library(dplyr)
+library(ggplot2)
+
+# Importing the 'CaseStudy-data.xlsx' file into the 'CaseStudy2_data' data set
+CaseStudy2_data=read_excel("CaseStudy2-data.xlsx")
+
+# Adjusting the columns to the appropriate data types
+CaseStudy2_data$Age=as.integer(CaseStudy2_data$Age)
+CaseStudy2_data$Attrition=as.factor(CaseStudy2_data$Attrition)
+CaseStudy2_data$BusinessTravel=as.factor(CaseStudy2_data$BusinessTravel)
+CaseStudy2_data$DailyRate=as.integer(CaseStudy2_data$DailyRate)
+CaseStudy2_data$Department=as.factor(CaseStudy2_data$Department)
+CaseStudy2_data$DistanceFromHome=as.integer(CaseStudy2_data$DistanceFromHome)
+CaseStudy2_data$Education=as.factor(CaseStudy2_data$Education)
+CaseStudy2_data$EducationField=as.factor(CaseStudy2_data$EducationField)
+CaseStudy2_data$EmployeeCount=NULL
+CaseStudy2_data$EmployeeNumber=as.integer(CaseStudy2_data$EmployeeNumber)
+CaseStudy2_data$EnvironmentSatisfaction=as.factor(CaseStudy2_data$EnvironmentSatisfaction)
+CaseStudy2_data$Gender=as.factor(CaseStudy2_data$Gender)
+CaseStudy2_data$HourlyRate=as.integer(CaseStudy2_data$Age)
+CaseStudy2_data$JobInvolvement=as.factor(CaseStudy2_data$JobInvolvement)
+CaseStudy2_data$JobLevel=as.factor(CaseStudy2_data$JobLevel)
+CaseStudy2_data$JobRole=as.factor(CaseStudy2_data$JobRole)
+CaseStudy2_data$JobSatisfaction=as.factor(CaseStudy2_data$JobSatisfaction)
+CaseStudy2_data$MaritalStatus=as.factor(CaseStudy2_data$MaritalStatus)
+CaseStudy2_data$MonthlyIncome=as.integer(CaseStudy2_data$MonthlyIncome)
+CaseStudy2_data$MonthlyRate=as.integer(CaseStudy2_data$MonthlyRate)
+CaseStudy2_data$NumCompaniesWorked=as.integer(CaseStudy2_data$NumCompaniesWorked)
+CaseStudy2_data$Over18=as.factor(CaseStudy2_data$Over18)
+CaseStudy2_data$OverTime=as.factor(CaseStudy2_data$OverTime)
+CaseStudy2_data$PercentSalaryHike=as.integer(CaseStudy2_data$PercentSalaryHike)
+CaseStudy2_data$PerformanceRating=as.factor(CaseStudy2_data$PerformanceRating)
+CaseStudy2_data$RelationshipSatisfaction=as.factor(CaseStudy2_data$RelationshipSatisfaction)
+CaseStudy2_data$StandardHours=as.integer(CaseStudy2_data$StandardHours)
+CaseStudy2_data$StockOptionLevel=as.factor(CaseStudy2_data$StockOptionLevel)
+CaseStudy2_data$TotalWorkingYears=as.integer(CaseStudy2_data$TotalWorkingYears)
+CaseStudy2_data$TrainingTimesLastYear=as.integer(CaseStudy2_data$TrainingTimesLastYear)
+CaseStudy2_data$WorkLifeBalance=as.factor(CaseStudy2_data$WorkLifeBalance)
+CaseStudy2_data$YearsAtCompany=as.integer(CaseStudy2_data$YearsAtCompany)
+CaseStudy2_data$YearsInCurrentRole=as.integer(CaseStudy2_data$YearsInCurrentRole)
+CaseStudy2_data$YearsSinceLastPromotion=as.integer(CaseStudy2_data$YearsSinceLastPromotion)
+CaseStudy2_data$YearsWithCurrManager=as.integer(CaseStudy2_data$YearsWithCurrManager)
+
+setwd("C:/GIT_Repositories/MSDS6306_JKT_Case_Study_2/datasets")
+HRdf=read.csv("HRdata.csv")
+
+HRdf$Education=as.factor(HRdf$Education)
+HRdf$EnvironmentSatisfaction=as.factor(HRdf$EnvironmentSatisfaction)
+HRdf$JobInvolvement=as.factor(HRdf$JobInvolvement)
+HRdf$JobLevel=as.factor(HRdf$JobLevel)
+HRdf$JobSatisfaction=as.factor(HRdf$JobSatisfaction)
+HRdf$PerformanceRating=as.factor(HRdf$PerformanceRating)
+HRdf$RelationshipSatisfaction=as.factor(HRdf$RelationshipSatisfaction)
+HRdf$StockOptionLevel=as.factor(HRdf$StockOptionLevel)
+HRdf$WorkLifeBalance=as.factor(HRdf$WorkLifeBalance)
+
+theme_set(theme_light())
+```
+
+# Introduction
+DDS Analytics has been charged with the task of looking into the top reasons why personnel leave their company.  We have performed various analysis with the data set provided to come to the conclusions requested.  
+
+## Top Three Reasons Employees Leave.
+1. Having to work overtime (z-value=10.209)
+```{r Leave1-1, fig.width=10,fig.height=7, echo=TRUE}
+
+ggplot(HRdf, aes(OverTime, Attrition)) + geom_jitter()
+
+```
+
+
+2. Environment Satisfaction (z-value=5.229)
+```{r Leave2-1, fig.width=10,fig.height=7, echo=TRUE}
+
+ggplot(HRdf, aes(EnvironmentSatisfaction, Attrition)) + geom_jitter()
+
+```
+
+2. Job Satisfaction (z-value=5.082)
+
+```{r Leave2-2, fig.width=10,fig.height=7, echo=TRUE}
+
+ggplot(HRdf, aes(JobSatisfaction, Attrition)) + geom_jitter()
+
+```
+
+3. Business Travel Frequently (z-value=4.635)
+
+```{r Leave3-1, fig.width=10,fig.height=7, echo=TRUE}
+
+ggplot(HRdf, aes(BusinessTravel, Attrition)) + geom_jitter()
+
+```
+
+3. Job involvement (z-value=4.294)
+
+```{r Leave3-2, fig.width=10,fig.height=7, echo=TRUE}
+
+ggplot(HRdf, aes(JobInvolvement, Attrition)) + geom_jitter()
+
+```
+
+3. Distance from Home (z-value=4.250)
+```{r Leave3-3, fig.width=10,fig.height=7, echo=TRUE}
+
+ggplot(HRdf, aes(DistanceFromHome, Attrition)) + geom_jitter()
+
+```
+
+3. Years Since last promotion (z-value=4.090)
+```{r Leave3-4, fig.width=10,fig.height=7, echo=TRUE}
+
+ggplot(HRdf, aes(YearsSinceLastPromotion, Attrition)) + geom_jitter()
+
+```
+
+## Top Three Reasons Employees Stay.
+1. Departments
+  A. Research & Development (z-value=0.022)
+  B. Sales (z-value=0.022)
+  C. Human Resources (z-value=0.024)
+  
+2. Education and Monthly Income
+  A. Education (z-value=0.130)
+  B. Monthly Income (z-value=0.165)
+```{r Stay_2B, fig.width=10,fig.height=7, echo=TRUE}
+
+ggplot(HRdf, aes(HRdf$MonthlyIncome)) + 
+  geom_bar(aes(fill=Attrition), width = 0.5) +
+  labs(title = "Attrition by Job Level",
+       subtitle = "Attrition by Specific Job Level",
+       x = "Monthly Income",
+       y = "Frequency") +
+  coord_flip()
+
+```
+
+3. Benefits
+  A. Hourly Rate (z-value=0.262)
+  B. Performance (z-value=0.292)
+  C. Job Level (z-value=0.296)
+```{r Stay_3C, fig.width=10,fig.height=7, echo=TRUE}
+
+ggplot(HRdf, aes(HRdf$JobLevel)) + 
+  geom_bar(aes(fill=Attrition), width = 0.5) +
+  labs(title = "Attrition by Job Level",
+       subtitle = "Attrition by Specific Job Level",
+       x = "Job Level",
+       y = "Frequency") +
+  coord_flip()
+
+```
+  
+##Conclusion
+Let your employees work from home and get new managers.
