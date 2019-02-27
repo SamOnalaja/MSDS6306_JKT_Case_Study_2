@@ -341,3 +341,13 @@ library(rpart.plot)
 # Plotting 'tree'
 rpart.plot(tree)
 ```
+
+|
+|         3. GitHub Repository
+|                   https://github.com/dauntr/MSDS6306_JKT_Case_Study_2
+|
+|
+|
+|
+|
+|
