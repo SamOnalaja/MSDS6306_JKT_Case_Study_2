@@ -701,18 +701,6 @@ attrition%&gt;%ggplot() +
 <br />
 </div>
 <pre class="r"><code># Graphs for attrition by Job Involvement
-#attrition%&gt;%ggplot() +
-#  geom_histogram(aes(x=JobInvolvement, fill= Attrition), bins =4, color='black', position=&quot;stack&quot;)+
-#  scale_fill_manual(values=c(&quot;Yes&quot;=&quot;red&quot;,&quot;No&quot;=&quot;dark green&quot;))+
-#  ggtitle(label='The Effect of Job Involvement on Attrition by Count')
-
-#attrition%&gt;%ggplot(aes(JobInvolvement, fill= Attrition)) +
-#  geom_histogram(aes(y=(..count..)/sum(..count..)), bins =4, color ='black', position=&quot;fill&quot;)+
-#  scale_fill_manual(values=c(&quot;Yes&quot;=&quot;red&quot;,&quot;No&quot;=&quot;dark green&quot;))+
-#  ggtitle(label='The Effect of Job Involvement on Attrition Rate by Percentage')+
-#  theme(plot.title=element_text(hjust=0.5))+
-#  ylab('Percentages')+
-#  geom_hline(yintercept=0.1612, color=&quot;blue&quot;)
 attrition%&gt;%ggplot() +
   geom_bar(aes(x=JobRole, fill=JobInvolvement ), color='black', position=&quot;stack&quot;)+
   scale_fill_manual(values=c(&quot;1&quot;=&quot;red&quot;,&quot;2&quot;=&quot;dark green&quot;, '3'='blue', '4'='yellow'))+
@@ -840,7 +828,7 @@ install.packages(&quot;e1071&quot;, dependencies=F, repos=&quot;http://cran.us.r
 <pre><code>## package 'e1071' successfully unpacked and MD5 sums checked
 ## 
 ## The downloaded binary packages are in
-##  C:\Users\kjjur\AppData\Local\Temp\RtmpgRFNiG\downloaded_packages</code></pre>
+##  C:\Users\kjjur\AppData\Local\Temp\RtmpGiiftG\downloaded_packages</code></pre>
 <pre class="r"><code>library(e1071)
 
 # Creating the Naive-Bayes model
@@ -1058,14 +1046,14 @@ install.packages(&quot;rpart&quot;, dependencies=F, repos=&quot;http://cran.us.r
 <pre><code>## package 'rpart' successfully unpacked and MD5 sums checked
 ## 
 ## The downloaded binary packages are in
-##  C:\Users\kjjur\AppData\Local\Temp\RtmpgRFNiG\downloaded_packages</code></pre>
+##  C:\Users\kjjur\AppData\Local\Temp\RtmpGiiftG\downloaded_packages</code></pre>
 <pre class="r"><code>install.packages(&quot;rpart.plot&quot;, dependencies=F, repos=&quot;http://cran.us.r-project.org&quot;)</code></pre>
 <pre><code>## Installing package into 'C:/Users/kjjur/Documents/R/win-library/3.5'
 ## (as 'lib' is unspecified)</code></pre>
 <pre><code>## package 'rpart.plot' successfully unpacked and MD5 sums checked
 ## 
 ## The downloaded binary packages are in
-##  C:\Users\kjjur\AppData\Local\Temp\RtmpgRFNiG\downloaded_packages</code></pre>
+##  C:\Users\kjjur\AppData\Local\Temp\RtmpGiiftG\downloaded_packages</code></pre>
 <pre class="r"><code>library(rpart)
 
 # Creating the tree
@@ -1093,9 +1081,9 @@ summary(tree)</code></pre>
 ## 
 ##           CP nsplit rel error    xerror       xstd
 ## 1 0.05696203      0 1.0000000 1.0000000 0.05949065
-## 2 0.02531646      2 0.8860759 0.9831224 0.05908208
-## 3 0.01898734      4 0.8354430 1.0421941 0.06048598
-## 4 0.01687764      6 0.7974684 1.0632911 0.06097010
+## 2 0.02531646      2 0.8860759 0.9704641 0.05877163
+## 3 0.01898734      4 0.8354430 1.0000000 0.05949065
+## 4 0.01687764      6 0.7974684 0.9957806 0.05938908
 ## 5 0.01000000      9 0.7468354 1.0042194 0.05959184
 ## 
 ## Variable importance

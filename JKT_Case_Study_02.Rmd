@@ -160,18 +160,6 @@ attrition%>%ggplot(aes(OverTime, fill= Attrition)) +
 ```{r Leave_Job_Involvement, fig.width=10,fig.height=7, echo=TRUE}
 
 # Graphs for attrition by Job Involvement
-#attrition%>%ggplot() +
-#  geom_histogram(aes(x=JobInvolvement, fill= Attrition), bins =4, color='black', position="stack")+
-#  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
-#  ggtitle(label='The Effect of Job Involvement on Attrition by Count')
-
-#attrition%>%ggplot(aes(JobInvolvement, fill= Attrition)) +
-#  geom_histogram(aes(y=(..count..)/sum(..count..)), bins =4, color ='black', position="fill")+
-#  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
-#  ggtitle(label='The Effect of Job Involvement on Attrition Rate by Percentage')+
-#  theme(plot.title=element_text(hjust=0.5))+
-#  ylab('Percentages')+
-#  geom_hline(yintercept=0.1612, color="blue")
 attrition%>%ggplot() +
   geom_bar(aes(x=JobRole, fill=JobInvolvement ), color='black', position="stack")+
   scale_fill_manual(values=c("1"="red","2"="dark green", '3'='blue', '4'='yellow'))+
