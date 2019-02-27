@@ -1,0 +1,355 @@
+---
+title: "DDSAnalytics"
+author: "Travis R. Daun, Joe Jiang, Karl J. Jurek"
+date: "February 21, 2019"
+output: html_document
+---
+
+```{r stuff, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.width=10,fig.height=11)
+```
+
+```{r setup, include=T, echo=TRUE}
+library(httr)
+library(knitr)
+library(kableExtra)
+library(dplyr)
+library(ggplot2)
+
+# Reading in the 'CaseStudy2-data.csv' data file
+attrition=read.csv("https://raw.githubusercontent.com/dauntr/MSDS6306_JKT_Case_Study_2/master/datasets/CaseStudy2-data.csv", header=T, stringsAsFactors=F)
+
+# Validating there is no missing data
+sapply(attrition,function(x) sum(is.na(x)))
+
+# Changing various columns to 'factors'
+attrition$BusinessTravel=as.factor(attrition$BusinessTravel)
+attrition$Attrition=as.factor(attrition$Attrition)
+attrition$Department=as.factor(attrition$Department)
+attrition$EducationField=as.factor(attrition$EducationField)
+attrition$Gender=as.factor(attrition$Gender)
+attrition$JobRole=as.factor(attrition$JobRole)
+attrition$MaritalStatus<- as.factor(attrition$MaritalStatus)
+attrition$Over18=as.factor(attrition$Over18)
+attrition$OverTime=as.factor(attrition$OverTime)
+attrition$Education=as.factor(attrition$Education)
+attrition$EnvironmentSatisfaction=as.factor(attrition$EnvironmentSatisfaction)
+attrition$JobInvolvement=as.factor(attrition$JobInvolvement)
+attrition$JobLevel=as.factor(attrition$JobLevel)
+attrition$JobSatisfaction=as.factor(attrition$JobSatisfaction)
+attrition$PerformanceRating=as.factor(attrition$PerformanceRating)
+attrition$RelationshipSatisfaction=as.factor(attrition$RelationshipSatisfaction)
+attrition$StockOptionLevel=as.factor(attrition$StockOptionLevel)
+attrition$WorkLifeBalance=as.factor(attrition$WorkLifeBalance)
+
+# Remove the 'over18' column because it only has one level (all 'yes')
+attrition$Over18=NULL  
+
+# Fit full logistic model 
+fullmodel=glm(Attrition~., family= binomial(link="logit"), data=attrition)
+
+# Looking at the 'fullmodel'
+summary(fullmodel)
+```
+
+|
+|
+# Introduction
+|
+|
+|         DDS Analytics has been charged with the task of looking into the top reasons why personnel leave the company.  
+|         We have performed various analysis with the data set provided to come to the conclusions requested.
+
+|
+|
+## Attrition Rates by Department
+|
+|         The following graphs display the attrition rates by department.
+
+|
+|
+|
+```{r Leave_Dept, fig.width=10,fig.height=7, echo=TRUE}
+
+# Graphs for attrition by Dept
+attrition%>%ggplot() +
+  geom_bar(aes(Department, fill= Attrition), color= 'black', position="stack")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='Department Attrition by Count')+
+  theme(plot.title=element_text(hjust=0.5))+
+  ylab('Count')+
+  theme(axis.text.x=element_text(angle=60, hjust=1))
+
+attrition%>%ggplot(aes(Department, fill= Attrition)) +
+  geom_bar(aes(y=(..count..)/sum(..count..)), color ='black', position="fill")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='Department Attrition Rate by Percentage')+
+  theme(plot.title=element_text(hjust=0.5))+
+  theme(axis.text.x=element_text(angle=60, hjust=1))+
+  ylab('Percentages')+
+  geom_hline(yintercept=0.1612, color="blue")
+```
+
+|
+|
+## Attrition Rates by Job Role
+|
+|         The following graphs display the attrition rates by job role.
+
+|
+|
+|
+```{r Leave_Job_Role, fig.width=10,fig.height=7, echo=TRUE}
+
+# Graphs for attrition by Job Roles
+attrition%>%ggplot() +
+  geom_bar(aes(JobRole, fill= Attrition), color='black', position="stack")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='The Effect of Job Role on Attrition by Count')+
+  theme(plot.title=element_text(hjust=0.5))+
+  theme(axis.text.x=element_text(angle=60, hjust=1))+
+  ylab('Count')+
+  xlab('Job Role')
+
+attrition%>%ggplot(aes(JobRole, fill= Attrition)) +
+  geom_bar(aes(y=(..count..)/sum(..count..)), color='black',position="fill")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='The Effect of Job Role on Attrition Rate by Percentage')+
+  theme(plot.title=element_text(hjust=0.5))+
+  theme(axis.text.x=element_text(angle=60, hjust=1))+
+  ylab('Percentages')+
+  xlab('Job Role')+
+  geom_hline(yintercept=0.1612, color="blue")
+```
+
+|
+|
+## Top Three Reasons Employees Leave
+|
+|         1. Overtime
+
+|
+|
+|
+```{r Leave_Overtime, fig.width=10,fig.height=7, echo=TRUE}
+# Graphs for attrition by Overtime
+attrition%>%ggplot() +
+  geom_bar(aes(OverTime, fill= Attrition), color='black', position="stack")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  theme(plot.title=element_text(hjust=0.5))+
+  ylab('Count')+
+  xlab('Overtime')+
+  ggtitle(label='The Effect of Overtime on Attrition by Count')
+
+attrition%>%ggplot(aes(OverTime, fill= Attrition)) +
+  geom_bar(aes(y=(..count..)/sum(..count..)), color='black',position="fill")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='The Effect of Overtime on Attrition Rate by Percentage')+
+  theme(plot.title=element_text(hjust=0.5))+
+  ylab('Percentages')+
+  xlab('Overtime')+
+  geom_hline(yintercept=0.1612, color="blue")
+```
+
+|
+|         2. Job Involvement
+
+|
+|
+| 
+```{r Leave_Job_Involvement, fig.width=10,fig.height=7, echo=TRUE}
+
+# Graphs for attrition by Job Involvement
+#attrition%>%ggplot() +
+#  geom_histogram(aes(x=JobInvolvement, fill= Attrition), bins =4, color='black', position="stack")+
+#  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+#  ggtitle(label='The Effect of Job Involvement on Attrition by Count')
+
+#attrition%>%ggplot(aes(JobInvolvement, fill= Attrition)) +
+#  geom_histogram(aes(y=(..count..)/sum(..count..)), bins =4, color ='black', position="fill")+
+#  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+#  ggtitle(label='The Effect of Job Involvement on Attrition Rate by Percentage')+
+#  theme(plot.title=element_text(hjust=0.5))+
+#  ylab('Percentages')+
+#  geom_hline(yintercept=0.1612, color="blue")
+attrition%>%ggplot() +
+  geom_bar(aes(x=JobRole, fill=JobInvolvement ), color='black', position="stack")+
+  scale_fill_manual(values=c("1"="red","2"="dark green", '3'='blue', '4'='yellow'))+
+  theme(plot.title=element_text(hjust=0.5))+
+  theme(axis.text.x=element_text(angle=60, hjust=1))+
+  ggtitle(label='Employee Involvement Scores Across All Roles by Count')+
+  ylab('Count')+
+  xlab('Job Role')
+
+attrition%>%ggplot(aes(JobRole, fill=JobInvolvement )) +
+  geom_bar(aes(y=(..count..)/sum(..count..)),color ='black', position="fill")+
+  scale_fill_manual(values=c("1"="red","2"="dark green", '3'='blue', '4'='yellow'))+
+  ggtitle(label='Employee Involvement Scores Across All Roles by Percentage')+
+  theme(plot.title=element_text(hjust=0.5))+
+  theme(axis.text.x=element_text(angle=60, hjust=1))+
+  ylab('Percentages')+
+  xlab('Job Role')
+```
+
+|
+|         3. Frequent Travel
+
+|
+|
+| 
+```{r Leave_Job_Travel, fig.width=10,fig.height=7, echo=TRUE}
+
+# Graphs for attrition by Frequent Travel
+attrition%>%ggplot() +
+  geom_bar(aes(BusinessTravel, fill= Attrition), color='black', position="stack")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='The Effect of Business Travel on Attrition by Count')+
+  theme(plot.title=element_text(hjust=0.5))+
+  ylab('Count')+
+  xlab('Travel')
+
+attrition%>%ggplot(aes(BusinessTravel, fill= Attrition)) +
+  geom_bar(aes(y=(..count..)/sum(..count..)), color='black', position="fill")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='The Effect of Business Travel on Attrition Rate by Percentage')+
+  theme(plot.title=element_text(hjust=0.5))+
+  ylab('Percentages')+
+  geom_hline(yintercept=0.1612, color="blue")+
+  ylab('Percentages')+
+  xlab('Travel')
+```
+
+|
+|
+## Top Reasons Why Employees Stay
+|
+|         1. Stock Options
+
+|
+|
+|
+```{r Stay_Stock_Options, fig.width=10,fig.height=7, echo=TRUE}
+
+# Graphs for Staying because of Stock Options
+attrition%>%ggplot() +
+  geom_bar(aes(StockOptionLevel, fill= Attrition), position="stack")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='The Effect of Stock Option Levels on Attrition by Count')+  
+  theme(plot.title=element_text(hjust=0.5))+
+  ylab('Count')+
+  xlab('Stock Options Level')
+
+
+attrition%>%ggplot(aes(StockOptionLevel, fill= Attrition)) +
+  geom_bar(aes(y=(..count..)/sum(..count..)), position="fill")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='The Effect of Stock Option Levels on Attrition Rate by Percentage')+
+  theme(plot.title=element_text(hjust=0.5))+
+  ylab('Percentages')+
+  geom_hline(yintercept=0.1612, color="blue")+
+  ylab('Percentage')+
+  xlab('Stock Options Level')
+```
+
+|
+|         2. At the Company for at least three years.
+
+|
+|
+| 
+```{r Stay_Company_Time, fig.width=10,fig.height=7, echo=TRUE}
+
+# Graphs for Staying because of being with the company greater than three years
+attrition%>%ggplot() +
+  geom_histogram(aes(x=YearsAtCompany, fill= Attrition), bins =41, color='black', position="stack")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='The Effect of Job Involvement on Attrition by Count')+
+  theme(plot.title=element_text(hjust=0.5))+
+  ylab('Count')+
+  xlab('Years with Company')
+
+attrition%>%ggplot(aes(x=YearsAtCompany, fill= Attrition)) +
+  geom_histogram(aes(y=(..count..)/sum(..count..)), bins =41, color ='black', position="fill")+
+  scale_fill_manual(values=c("Yes"="red","No"="dark green"))+
+  ggtitle(label='The Effect of Job Involvement on Attrition Rate by Percentage')+
+  theme(plot.title=element_text(hjust=0.5))+
+  ylab('Percentages')+
+  xlab('Years with Company')+
+  geom_hline(yintercept=0.1612, color="blue")
+```
+
+|
+|
+## Conclusion and Recommendations
+|
+|         1. Overtime is the most influential factor in why an employee leaves the company.  You should find ways to 
+|            improve work/life balance for your employees.
+|         2. If the employee does not feel a sense of involvment they will leave.  A strategy should be developed to keep |            employees engaged.
+|         3. Reduce travel time for employees as much as possible. This has a two-fold effect.  First, you wil retain
+|            more of your employees.  Second, you will reduce expenses for the company.
+|         4. The largest group of employees are the young and new employees.  If you are able to keep to retain the
+|            employee past three years they will be with the company for a long period.  Ways of accomplishing this are:
+|                     A. Mentoring and more time with their manager.
+|                     B. Offering stock options earlier or immediately when hired.
+
+|
+|
+## Appendix
+
+|
+|         1. Naive Bayes Model
+
+|
+|
+| 
+```{r Appendix_Naive_Bayes, fig.width=10,fig.height=7, echo=TRUE}
+
+# Installing package and library 'e1071' for Naive_Bayes
+install.packages("e1071", dependencies=F, repos="http://cran.us.r-project.org")
+library(e1071)
+
+# Creating the Naive-Bayes model
+Naive_Bayes_Model=naiveBayes(Attrition ~., data=attrition)
+
+# Viewing the Naive_Bayes model
+Naive_Bayes_Model
+
+# Creating the Naive-Bayes model predictions
+NB_Predictions=predict(Naive_Bayes_Model,attrition)
+
+# Viewing the Naive_Bayes model predictions
+# NOTE: Confusion matrix to check accuracy
+table(NB_Predictions, attrition$Attrition)
+```
+
+|
+|         2. Trees
+
+|
+|
+| 
+```{r Appendix_Tree, fig.width=10,fig.height=7, echo=TRUE}
+
+# Installing package and library 'rpart' and 'rpart.plot' for tree view
+install.packages("rpart", dependencies=F, repos="http://cran.us.r-project.org")
+install.packages("rpart.plot", dependencies=F, repos="http://cran.us.r-project.org")
+library(rpart)
+
+# Creating the tree
+tree <- rpart(Attrition ~ Age + Education + MonthlyIncome + JobLevel + StockOptionLevel + MaritalStatus +
+                 Department + BusinessTravel + DistanceFromHome + EducationField + Gender + JobRole +
+                 NumCompaniesWorked + OverTime + PercentSalaryHike + TotalWorkingYears + TrainingTimesLastYear +
+                 YearsAtCompany + YearsInCurrentRole + YearsSinceLastPromotion + YearsWithCurrManager + 
+                 EnvironmentSatisfaction + JobInvolvement + JobSatisfaction + PerformanceRating +
+                 RelationshipSatisfaction + WorkLifeBalance,
+                 data=attrition,  method="class")
+
+# Viewing the summary of 'tree'
+summary(tree)
+
+#Calling the library 'rpart.plot'for plotting 'tree'
+library(rpart.plot)
+
+# Plotting 'tree'
+rpart.plot(tree)
+```
