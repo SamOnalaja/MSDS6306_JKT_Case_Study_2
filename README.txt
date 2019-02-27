@@ -59,4 +59,5 @@ Contact: For any questions please log an Issue
 2. CaseStudy02.pdf
 3. JKT_Case_Study_02.Rmd
 4. JKT_Case_Study_02.html
-5. README.txt
+5. JKT_Case_Study_02_Presentation.pptx
+6. README.txt
